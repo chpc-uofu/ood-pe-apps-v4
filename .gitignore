@@ -1,12 +1,12 @@
 
 # # Ruby
-# .bundle/
-# vendor/
+.bundle/
+vendor/
 
 # # Other
-# *.img
-# *.simg
-# git.info
-# *~
-# *.sw[p-s]
-# *.out
+*.img
+*.simg
+git.info
+*~
+*.sw[p-s]
+*.out
