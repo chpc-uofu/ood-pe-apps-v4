@@ -1,0 +1,4 @@
+    label: "Account and partition"
+    help: "Choose the **account:partition** combination appropriate to the cluster chosen above. If in doubt, use redwood-shared-short account and partition."
+    value: "redwood-shared-short:redwood-shared-short"
+    cacheable: true

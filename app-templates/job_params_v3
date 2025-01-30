@@ -1,0 +1,84 @@
+  num_cores:
+    widget: "number_field"
+    label: "Number of cores"
+    value: 8
+    help: "Maximum number of CPU cores on redwood-shared-short is 8, see [cluster help pages](https://www.chpc.utah.edu/resources/HPC_Clusters.php) for other cluster's node counts."
+    min: 1
+    step: 1
+  bc_num_hours:
+    value: 8
+    min: 1
+    step: 1
+    help: "Maximum wall time on redwood-shared-short is 8 hours, general nodes 72 hours, owner nodes 14 days."
+  bc_email_on_started:
+    widget: "check_box"
+    label: "I would like to receive an email when the session starts"
+    help: "If you do not receive the email, check your [Profile](https://www.chpc.utah.edu/role/user/edit_profile.php) for correct address."
+  bc_vnc_resolution:
+    required: true
+  memtask:
+    widget: "number_field"
+    value: 0 
+    min: 0
+    max: 64
+    step: 1
+    label: "Memory per job in GB"
+    help: |
+      - **0** - Use default, 2 or 4 GB per task, depending on partition.
+      - **16** - Use 16 GB, this is the maximum on redwood-shared-short.
+  gpu_type:
+    label: "GPU type"
+    widget: select
+    value: "none" 
+    options:
+      - [
+           'none',
+           data-hide-gpu-count: true
+        ]
+      - [
+           'any','any',
+        ]
+      - [
+           'GTX 1080 Ti, SP, general','1080ti',
+        ]
+      - [
+           'Tesla A30, SP, owner','a30',
+        ]
+      - [
+           'Tesla A40, SP, owner','a40',
+        ]
+      - [
+           'Tesla A100, DP, owner','a100'
+        ]
+    help: |
+      - choose **none** if no GPU.
+      - **any** available GPU for the given cluster and partition.
+      - SP - Single Precision, DP - Double Precision.
+      - Choose the correct account and partition for the selected GPUs. General nodes use __*cluster*-gpu:*cluster*-gpu__ and owner nodes **owner-gpu-guest:*cluster*-gpu-guest**.
+      - See [GPU node list](https://chpc.utah.edu/documentation/guides/gpus-accelerators.php#gnl) for details on GPU features and counts per node.
+  gpu_count:
+    label: "GPU count"
+    widget: "number_field"
+    value: 1
+    min: 1
+    max: 8
+    step: 1
+
+  nodelist:
+    widget: text_area
+    label: Nodelist
+    help: "Enter a list of nodes to run on (will be passed to the sbatch -nodelist option). Leave empty if you want to include all available nodes."
+
+  advanced_options:
+    widget: select
+    label: "Advanced options (memory, GPU, node list)"
+    value: "false"
+    options:
+      - [
+           'Hide','false',
+           data-hide-memtask: true,
+           data-hide-gpu-type: true,
+           data-hide-gpu-count: true,
+           data-hide-nodelist: true
+        ]
+      - [ 'Show', 'true' ]

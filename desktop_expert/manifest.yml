@@ -1,0 +1,18 @@
+---
+name: Expert Interactive Desktop
+icon: fa://desktop
+category: Interactive Apps
+subcategory: Desktops
+role: batch_connect
+description: |
+  This app will launch an interactive desktop on one or more compute nodes. You
+  will have full access to the resources these nodes provide. This is analogous
+  to an interactive batch job.
+
+  To start the job promptly, use the redwood-shared-short account and partition. Choose the number of CPU cores and length of the job and push the **Launch** button. 
+
+  Memory and [GPU specification] are optional.
+
+  [Redwood]: https://www.chpc.utah.edu/documentation/guides/redwood.php
+  [Bristlecone node]: https://www.chpc.utah.edu/documentation/guides/frisco-nodes.php
+  [GPU specification]: https://www.chpc.utah.edu/documentation/guides/gpus-accelerators.php#overview

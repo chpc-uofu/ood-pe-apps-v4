@@ -1,0 +1,24 @@
+      - [
+          'bristlecone1',
+          data-hide-gpu-type: true,
+          data-hide-memtask: true,
+          data-hide-bc-vnc-resolution: true,
+          data-hide-num-cores: true,
+          data-hide-bc-num-hours: true,
+          data-hide-custom-accpart: true,
+          data-hide-bc-email-on-started: true,
+          data-hide-advanced-options: true,
+          data-hide-nodelist: true,
+        ]
+      - [
+          'bristlecone2',
+          data-hide-gpu-type: true,
+          data-hide-memtask: true,
+          data-hide-bc-vnc-resolution: true,
+          data-hide-num-cores: true,
+          data-hide-bc-num-hours: true,
+          data-hide-custom-accpart: true,
+          data-hide-bc-email-on-started: true,
+          data-hide-advanced-options: true,
+          data-hide-nodelist: true,
+        ]

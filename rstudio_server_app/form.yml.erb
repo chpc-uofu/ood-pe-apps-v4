@@ -1,0 +1,60 @@
+<%
+app_name = "RStudio Server"
+template_root = "/var/www/ood/apps/templates/"
+%>
+---
+title: <%= app_name %>
+attributes:
+  version:
+    widget: select
+    label: "R version"
+    help: "This defines the version of R you want to load. CHPC build denotes [CHPC installed R](https://www.chpc.utah.edu/documentation/software/r-language.php), as opposed to other versions that are obtained from [Rocker containers](https://www.rocker-project.org). The latter are better for more complex computing environments, e.g. bioinformatics and geospatial applications.<br>See output from '.libPaths()' function for the location of the user installed libraries."
+    options:
+      - [ "R 4.0.2 CHPC build", "4.0.2"]
+      - [ "R 4.1.1 CHPC build", "4.1.1"]
+      - [ "R 4.1.2 Basic packages", "4.1.2-basic"]
+      - [ "R 4.1.2 Bioconductor packages", "4.1.2-bioconductor"]
+      - [ "R 4.1.2 Geospatial packages", "4.1.2-geospatial"]
+      - [ "R 4.0.2 Basic packages", "4.0.2-basic"]
+      - [ "R 4.0.3 Bioconductor packages", "4.0.3-bioconductor"]
+      - [ "R 4.0.3 Geospatial packages", "4.0.3-geospatial"]
+      - [ "R 3.6.2 Basic packages", "3.6.2-basic"]
+      - [ "R 3.6.2 Bioconductor packages", "3.6.2-bioconductor"]
+      - [ "R 3.6.2 Geospatial packages", "3.6.2-geospatial"]
+
+  cluster:
+    widget: select
+    options:
+      - redwood
+<% IO.foreach(template_root+"bristlecones_v2") do |line| %>
+<%= line %>
+<% end %>    
+<% IO.foreach(template_root+"cluster-help") do |line| %>
+<%= line %>
+<% end %>    
+  custom_accpart:
+    widget: select
+    options:
+      <%- CustomAccPart.accpart.each do |g| %>
+      - "<%= g %>"
+      <%- end %>
+<% IO.foreach(template_root+"accpart-help") do |line| %>
+<%= line %>
+<% end %>    
+
+<% IO.foreach(template_root+"job_params_v3") do |line| %>
+<%= line %>
+<% end %>    
+
+form:
+  - version
+  - cluster
+  - custom_accpart
+  - num_cores
+  - bc_num_hours
+  - advanced_options
+  - memtask
+  - gpu_type
+  - gpu_count
+  - nodelist
+  - bc_email_on_started

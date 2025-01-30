@@ -1,0 +1,75 @@
+<%
+app_name = "Jupyter"
+template_root = "/var/www/ood/apps/templates/"
+%>
+---
+title: <%= app_name %>
+attributes:
+  interface:
+    widget: select
+    label: <%= app_name %> interface
+    help: "This defines the interface of <%= app_name %> you want to start (Notebook or Lab)."
+    options:
+      - [ "Notebook", "notebook" ]
+      - [ "Lab", "lab" ]
+  python:
+    widget: select
+    label: <%= app_name %> Python version
+    help: "This defines the Python distribution of <%= app_name %> you want to start."
+    options:
+      - [ "CHPC Python 3.6.3", "python/3.6.3 R/3.6.1",
+           data-hide-custom-environment: true
+        ]
+      - [ "CHPC Python 3.9.7", "python/3.9.7 R/4.1.1",
+           data-hide-custom-environment: true
+        ]
+      - [ "CHPC Deep Learning 2022.1", "deeplearning/2022.1",
+           data-hide-custom-environment: true
+        ]
+      - [ "Custom (Environment Setup below)", "custom" ]
+  custom_environment:
+    widget: text_area
+    label: Environment Setup for Custom Python
+    help: "Enter commands (module load, source activate, etc) to create your desired Jupyter environment; jupyter MUST be on your path and either notebook or jupyterlab installed in your Python environment. For instructions how to install your own Python using Miniconda see https://www.chpc.utah.edu/documentation/software/python-anaconda.php."
+    value: |
+        module load python/3.6.3 R/3.6.1
+
+  cluster:
+    widget: select
+    options:
+      - redwood
+<% IO.foreach(template_root+"bristlecones_v2") do |line| %>
+<%= line %>
+<% end %>    
+<% IO.foreach(template_root+"cluster-help") do |line| %>
+<%= line %>
+<% end %>    
+  custom_accpart:
+    widget: select
+    options:
+      <%- CustomAccPart.accpart.each do |g| %>
+      - "<%= g %>"
+      <%- end %>
+<% IO.foreach(template_root+"accpart-help") do |line| %>
+<%= line %>
+<% end %>    
+
+<% IO.foreach(template_root+"job_params_v3") do |line| %>
+<%= line %>
+<% end %>    
+
+form:
+  - interface
+  - python
+  - custom_environment
+  - cluster
+  - custom_accpart
+  - num_cores
+  - bc_num_hours
+  - advanced_options
+  - memtask
+  - gpu_type
+  - gpu_count
+  - nodelist
+  - bc_vnc_resolution
+  - bc_email_on_started

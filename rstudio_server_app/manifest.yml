@@ -1,0 +1,21 @@
+---
+name: RStudio Server
+category: Interactive Apps
+subcategory: Servers
+role: batch_connect
+description: |
+  This app will launch [RStudio Server] an IDE for [R] on one node of [Redwood] or on a [Bristlecone node].
+ 
+
+  To start the job promptly, use the redwood-shared-short account and partition. Choose the number of CPU cores and length of the job and push the **Launch** button. 
+
+  Memory and [GPU specification] are optional.
+
+  <b>NOTE:</b> For technical reasons only CHPC builds of the RStudio Server currently work on Bristlecone nodes. Please contact us for more information at helpdesk@chpc.utah.edu.
+
+  [RStudio Server]: https://www.rstudio.com/products/rstudio-server/
+  [R]: https://www.r-project.org/
+  [Redwood]: https://www.chpc.utah.edu/documentation/guides/redwood.php
+  [GPU specification]: https://www.chpc.utah.edu/documentation/guides/gpus-accelerators.php#overview
+  [Bristlecone node]: https://www.chpc.utah.edu/resources/bristlecone.php
+

@@ -1,0 +1,51 @@
+<%
+app_name = "SAS"
+mod_name = "sas"
+template_root = "/var/www/ood/apps/templates/"
+%>
+---
+title: <%= app_name %>
+attributes:
+  version:
+    widget: select
+    label: <%= app_name %> version
+    help: "This defines the version of <%= app_name %> you want to load."
+    options:
+      - [ "9.4-19", "sas/9.4-19" ]
+  cluster:
+    widget: select
+    options:
+      - redwood
+<% IO.foreach(template_root+"bristlecones_v2") do |line| %>
+<%= line %>
+<% end %>    
+<% IO.foreach(template_root+"cluster-help") do |line| %>
+<%= line %>
+<% end %>    
+  custom_accpart:
+    widget: select
+    options:
+      <%- CustomAccPart.accpart.each do |g| %>
+      - "<%= g %>"
+      <%- end %>
+<% IO.foreach(template_root+"accpart-help") do |line| %>
+<%= line %>
+<% end %>    
+
+<% IO.foreach(template_root+"job_params_v3") do |line| %>
+<%= line %>
+<% end %>    
+
+form:
+  - version
+  - cluster
+  - custom_accpart
+  - num_cores
+  - bc_num_hours
+  - advanced_options
+  - memtask
+  - gpu_type
+  - gpu_count
+  - nodelist
+  - bc_vnc_resolution
+  - bc_email_on_started

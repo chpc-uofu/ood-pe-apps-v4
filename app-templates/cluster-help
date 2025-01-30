@@ -1,0 +1,3 @@
+    value: "redwood"
+    cacheable: true
+    help: "Select the cluster or Bristlecone node to create this session on."
