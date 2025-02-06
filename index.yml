@@ -5,7 +5,14 @@
 # 2. Are arrays for future-proofing.
 
 apiVersion: v1
-entries: []
-  # xxxx: []
-  # yyyy: []
-  # app-templates: []
+entries:
+  app-templates: []
+  chpc-systemstatus-pe: []
+  desktop_basic: []
+  desktop_expert: []
+  jupyter_app: []
+  matlab_app: []
+  matlab_html_app: []
+  rstudio_server_app: []
+  sas_app: []
+  stata_app: []
