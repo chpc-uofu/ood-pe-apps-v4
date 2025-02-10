@@ -1,0 +1,126 @@
+  num_cores:
+    widget: "number_field"
+    label: "Number of cores (per node)"
+    value: 1
+    help: "Maximum number of CPU cores on redwood-shared-short is 8, see [cluster help pages](https://www.chpc.utah.edu/resources/HPC_Clusters.php) for other cluster's node counts."
+    min: 1
+    step: 1
+  bc_num_hours:
+    value: 1
+    min: 1
+    step: 1
+    help: "Maximum wall time on redwood-shared-short is 8 hours, general nodes 72 hours, owner nodes 14 days."
+  bc_email_on_started:
+    widget: "check_box"
+    label: "I would like to receive an email when the session starts"
+    help: "If you do not receive the email, check your [Profile](https://www.chpc.utah.edu/role/user/edit_profile.php) for correct address."
+  bc_vnc_resolution:
+    required: true
+  advanced_options:
+    widget: "check_box"
+    label: "Advanced options (memory, GPU, nodes)"
+    help: Check the checkboxes to see the entry options. All advanced options need to be at their defaults for them to hide.
+    value: "0" 
+  nodes_checkbox:
+    widget: "check_box"
+    label: "Number of nodes"
+    value: "0"
+  num_nodes:
+    widget: "number_field"
+    skip_label: true
+    value: 1 
+    min: 1
+    max: 16
+    step: 1
+    help: |
+      - Default 1. Use more than one only if you know how to run the program across multiple nodes.
+  memtask_checkbox:
+    widget: "check_box"
+    label: "Memory per job in GB"
+    value: "0"
+  memtask:
+    widget: "number_field"
+    value: 0 
+    min: 0
+    max: 64
+    step: 1
+    skip_label: true
+    help: |
+      - **0** - Default, 2 or 4 GB per task, depending on partition.
+      - **16** - Use 16 GB, this is the maximum on redwood-shared-short.
+  gpu_checkbox:
+    widget: "check_box"
+    label: "GPU type"
+    value: "0"
+  gpu_type:
+    skip_label: true
+    widget: select
+    value: "none" 
+    options:
+      - [
+           'none',
+           data-hide-gpu-count: true
+        ]
+      - [
+           'any','any',
+        ]
+      - [
+           'Nvidia GT 1030 SP, 11GB, general','gt_1030',
+        ]
+      - [
+           'Nvidia GTX 1080 Ti, SP, 11GB, general','1080ti',
+        ]
+      - [
+           'Nvidia A30, SP, 24GB, owner','a30',
+        ]
+      - [
+           'Nvidia A40, SP, 48GB, owner','a40',
+        ]
+      - [
+           'Nvidia A100, DP, 40GB or 80GB, owner','a100',
+        ]
+      - [
+           'Nvidia RTX 6000, SP, 48GB, owner','rtx6000',
+        ]
+      - [
+           'Nvidia H100, DP, 80GB, owner','h100',
+        ]
+
+    help: |
+      - Default **none** if no GPU.
+      - **any** available GPU for the given cluster and partition.
+      - SP - Single Precision, DP - Double Precision.
+      - Select a GPU account and partition to see available GPUs. General nodes use __*cluster*-gpu:*cluster*-gpu__ and owner nodes **owner-gpu-guest:*cluster*-gpu-guest**.
+      - See [GPU node list](https://chpc.utah.edu/documentation/guides/gpus-accelerators.php#gnl) for details on GPU features and counts per node.
+  gpu_count:
+    label: "GPU count"
+    widget: "number_field"
+    value: 1
+    min: 1
+    max: 8
+    step: 1
+  nodelist_checkbox:
+    widget: "check_box"
+    label: "Nodelist"
+    value: "0"
+  nodelist:
+    widget: text_area
+    skip_label: true
+    help: "Enter a list of nodes to run on (will be passed to the sbatch --nodelist option). Default empty if you want to include all available nodes."
+  add_env_checkbox:
+    widget: "check_box"
+    label: "Additional environment"
+    value: "0"
+  additional_environment:
+    widget: text_area
+    skip_label: true
+    help: "Enter extra environment parameters such as module loads to be present in the app environment. Only works for CHPC installed apps, not for apps from containers (R Bioconductor/Geospatial, Python Deep Learning). Default empty."
+  constraint_checkbox:
+    widget: "check_box"
+    label: "Constraints (node owner, CPU architecture, memory)"
+    value: "0"
+  constraint:
+    widget: text_area
+    skip_label: true
+    help: "Node owner is useful for targeting owner-guest nodes to [lower preemption chances](https://www.chpc.utah.edu/usage/constraints). CPU architecture targets [specific CPUs](https://www.chpc.utah.edu/usage/constraints/#cpu). Default empty."
+
