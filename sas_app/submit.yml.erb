@@ -27,8 +27,12 @@ script:
     - "--mem"
     - "<%= memtask %>G"
     <%- end -%>
-    <%- if nodelist != nil -%>
+    <%- if nodelist != "" -%>
     - "-w"
     - "<%= nodelist %>"
+    <%- end -%>
+    <%- if constraint != "" -%>
+    - "-C"
+    - "<%= constraint %>"
     <%- end -%>
   <%- end -%>

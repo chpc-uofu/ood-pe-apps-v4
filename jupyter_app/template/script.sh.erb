@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# debugging info
-module list
 
 # Set working directory to home directory
 cd "${HOME}"
@@ -11,6 +9,14 @@ cd "${HOME}"
 <%- else -%>
   module load <%= context.python %>
 <%- end -%>
+# additional environment
+<%- if context.additional_environment != "" -%>
+  <%= context.additional_environment.gsub /\r\n?/, "\n" %>
+<%- end -%>
+
+# debugging info
+module list
+
 # Workaround for directory permission error
 #unset XDG_RUNTIME_DIR
 #export XDG_RUNTIME_DIR=""
@@ -25,8 +31,10 @@ jupyter kernelspec list
 { set +x; } 2>/dev/null
 echo "TTT - $(date)"
 
-echo srun
-srun hostname -s
+if [ -v "$SLURM_JOBID" ]; then
+  echo srun
+  srun hostname -s
+fi 
 
 echo Interface is <%= context.interface %>
 #jupyter notebook --generate-config 

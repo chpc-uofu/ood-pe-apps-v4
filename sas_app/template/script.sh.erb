@@ -21,24 +21,29 @@ cd "${HOME}"
   export XDG_CACHE_HOME="$(mktemp -d)"
   module restore
   # set -x
-  xfwm4 --compositor=off --daemon --sm-client-disable
+  xfwm4 --compositor=off --sm-client-disable
+  #xfwm4 --compositor=off --daemon --sm-client-disable
   xsetroot -solid "#D3D3D3"
   xfsettingsd --sm-client-disable
   xfce4-panel --sm-client-disable
 ) &
 
 #
-# Start STATA
+# Start SAS
 #
 
 # Load the required environment
-module load <%= context.version %>
+module load <%= context.auto_modules_sas %>
+# additional environment
+<%- if context.additional_environment != "" -%>
+  <%= context.additional_environment.gsub /\r\n?/, "\n" %>
+<%- end -%>
 
 sas
 
 # Get the PID of the last xstata-mp process started that I own
-sas_pid=$( pgrep -u "$USER" 'xstata-mp' | tail )
-# As long as the PID directory exists we wait
-while [[ -d "/proc/$sas_pid" ]]; do
-  sleep 1
-done
+#sas_pid=$( pgrep -u "$USER" 'xstata-mp' | tail )
+## As long as the PID directory exists we wait
+#while [[ -d "/proc/$sas_pid" ]]; do
+#  sleep 1
+#done

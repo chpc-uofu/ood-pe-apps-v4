@@ -21,7 +21,7 @@ cd "${HOME}"
   export XDG_CACHE_HOME="$(mktemp -d)"
   module restore
   # set -x
-  xfwm4 --compositor=off --daemon --sm-client-disable
+  xfwm4 --compositor=off --sm-client-disable
   xsetroot -solid "#D3D3D3"
   xfsettingsd --sm-client-disable
   xfce4-panel --sm-client-disable
@@ -32,9 +32,14 @@ cd "${HOME}"
 #
 
 # Load the required environment
-# module load <%= context.version %>
+module load <%= context.auto_modules_stata %>
+# additional environment
+<%- if context.additional_environment != "" -%>
+  <%= context.additional_environment.gsub /\r\n?/, "\n" %>
+<%- end -%>
 
-/uufs/chpc.utah.edu/sys/installdir/stata/17/xstata-mp
+#/uufs/chpc.utah.edu/sys/installdir/stata/17/xstata-mp
+xstata-mp
 
 # Get the PID of the last xstata-mp process started that I own
 stata_pid=$( pgrep -u "$USER" 'xstata-mp' | tail )
