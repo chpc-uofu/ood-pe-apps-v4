@@ -1,27 +1,32 @@
 <%
 app_name = "SAS"
-mod_name = "sas"
 template_root = "/var/www/ood/apps/templates/"
+gpu_data = {
+  gpu_partitions: CustomGPUPartitions.gpu_partitions,
+  gpu_name_mappings: CustomGPUMappings.gpu_name_mappings
+}
 %>
 ---
 title: <%= app_name %>
 attributes:
-  version:
-    widget: select
-    label: <%= app_name %> version
+  auto_modules_sas:
+    default: false
     help: "This defines the version of <%= app_name %> you want to load."
-    options:
-      - [ "9.4-19", "sas/9.4-19" ]
+  gpudata:
+      widget: hidden_field
+      cacheable: false
+      value: |
+        "<%= gpu_data.to_json %>"
   cluster:
     widget: select
     options:
       - redwood
 <% IO.foreach(template_root+"bristlecones_v2") do |line| %>
 <%= line %>
-<% end %>    
+<% end %>
 <% IO.foreach(template_root+"cluster-help") do |line| %>
 <%= line %>
-<% end %>    
+<% end %>
   custom_accpart:
     widget: select
     options:
@@ -32,20 +37,12 @@ attributes:
 <%= line %>
 <% end %>    
 
-<% IO.foreach(template_root+"job_params_v3") do |line| %>
+<% IO.foreach(template_root+"job_params_v33") do |line| %>
 <%= line %>
-<% end %>    
+<% end %>   
 
 form:
-  - version
-  - cluster
-  - custom_accpart
-  - num_cores
-  - bc_num_hours
-  - advanced_options
-  - memtask
-  - gpu_type
-  - gpu_count
-  - nodelist
-  - bc_vnc_resolution
-  - bc_email_on_started
+  - auto_modules_sas
+<% IO.foreach(template_root+"form_params_gpu") do |line| %>
+<%= line %>
+<% end %>
