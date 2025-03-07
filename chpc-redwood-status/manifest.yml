@@ -1,0 +1,8 @@
+---
+name: Redwood Node Status
+description: |-
+  Detailed Node Status of the Redwood Cluster
+category: Clusters
+icon: fa://tachometer
+url: https://portal.chpc.utah.edu/slurm/cluster/redwood/
+new_window: true
