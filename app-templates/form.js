@@ -113,6 +113,8 @@ function filterAccountPartitionOptions() {
         'kingspeak': 'kp',
         'lonepeak': 'lp',
         'notchpeak': 'np'
+        'granite': 'grn'
+        'redwood': 'rw'
     };
 
     for (let i = 0; i < options.length; i++) {
@@ -133,6 +135,12 @@ function setDefaultPartition(clusterChange) {
     
     // Allow for caching
     if (clusterChange || !accountPartitionSelect.value) {
+        for (i = 0; i < options.length; i++) {
+            if (options[i].value === cachedAccPart && options[i].style.display !== 'none') {
+                accountPartitionSelect.selectedIndex = i;
+                return;
+            }
+        }
         for (i = 0; i < options.length; i++) {
             if (options[i].style.display !== 'none') {
                 accountPartitionSelect.selectedIndex = i;
