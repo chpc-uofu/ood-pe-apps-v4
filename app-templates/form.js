@@ -37,11 +37,11 @@ function partitionLimits(selected_queue) {
 
     const queueConfigs = {
         "redwood-shared-short:redwood-shared-short": { max_time: 8, max_cpu: 8, max_mem: 32 },
-        "rw": { max_time: 336, max_cpu: 96, max_mem: 1000 }
+        "rw": { max_time: 336, max_cpu: 384, max_mem: 2150 }
     };
 
     let config = Object.entries(queueConfigs).find(([key, _]) => selected_queue.includes(key));
-    let { max_time, max_cpu, max_mem } = config ? config[1] : { max_time: 72, max_cpu: 64, max_mem: 764 };
+    let { max_time, max_cpu, max_mem } = config ? config[1] : { max_time: 72, max_cpu: 384, max_mem: 2150 };
 
     setFormField(time, max_time);
     setFormField(cpus, max_cpu);
