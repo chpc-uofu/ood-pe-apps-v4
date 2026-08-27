@@ -36,4 +36,8 @@ script:
     - "-C"
     - "<%= constraint %>"
     <%- end -%>
+    <%- if reservation != "" -%>
+    - "--reservation"
+    - "<%= reservation %>"
+    <%- end -%>
   <%- end -%>

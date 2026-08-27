@@ -160,8 +160,10 @@ function toggleAdvancedOptions() {
         memtask: $('#batch_connect_session_context_memtask'),
         gpuType: $('#batch_connect_session_context_gpu_type').length > 0 ? $('#batch_connect_session_context_gpu_type') : null,
         gpuCount: $('#batch_connect_session_context_gpu_count').length > 0 ? $('#batch_connect_session_context_gpu_count') : null,
+        gpuProfile: $('#batch_connect_session_context_gpu_profile'),
         nodelist: $('#batch_connect_session_context_nodelist'),
         constraint: $('#batch_connect_session_context_constraint'),
+        reservation: $('#batch_connect_session_context_reservation'),
         additionalEnvironment: $('#batch_connect_session_context_additional_environment'),
         numNodes: $('#batch_connect_session_context_num_nodes').length > 0 ? $('#batch_connect_session_context_num_nodes') : null,
         checkboxes: {
@@ -170,6 +172,7 @@ function toggleAdvancedOptions() {
             addEnv: $('#batch_connect_session_context_add_env_checkbox'),
             nodelist: $('#batch_connect_session_context_nodelist_checkbox'),
             constraint: $('#batch_connect_session_context_constraint_checkbox'),
+            reservation: $('#batch_connect_session_context_reservation_checkbox'),
             nodes: $('#batch_connect_session_context_nodes_checkbox').length > 0 ? $('#batch_connect_session_context_nodes_checkbox') : null
         },
         advancedOptions: $('#batch_connect_session_context_advanced_options')
@@ -191,10 +194,12 @@ function toggleAdvancedOptions() {
     toggleVisibility(elements.nodelist, showAdvanced && elements.checkboxes.nodelist.is(':checked'));
     toggleVisibility(elements.additionalEnvironment, showAdvanced && elements.checkboxes.addEnv.is(':checked'));
     toggleVisibility(elements.constraint, showAdvanced && elements.checkboxes.constraint.is(':checked'));
+    toggleVisibility(elements.reservation, showAdvanced && elements.checkboxes.reservation.is(':checked'));
 
-    if (elements.gpuType && elements.gpuCount && elements.checkboxes.gpu) {
+    if (elements.gpuType && elements.gpuCount && elements.gpuProfile && elements.checkboxes.gpu) {
         toggleVisibility(elements.gpuType, showAdvanced && elements.checkboxes.gpu.is(':checked'));
         toggleVisibility(elements.gpuCount, showAdvanced && elements.checkboxes.gpu.is(':checked') && elements.gpuType.val() !== "none");
+        toggleVisibility(elements.gpuProfile, showAdvanced && elements.checkboxes.gpu.is(':checked') && elements.gpuType.val() !== "none");
     }
 
     if (elements.numNodes && elements.checkboxes.nodes) {
@@ -207,6 +212,7 @@ function toggleAdvancedOptions() {
         (elements.gpuCount && elements.gpuCount.val() !== "1") ||
         elements.nodelist.val() !== "" ||
         elements.constraint.val() !== "" ||
+        elements.reservation.val() !== "" ||
         elements.additionalEnvironment.val() !== "" ||
         (elements.numNodes && elements.numNodes.val() !== "1");
 
@@ -243,6 +249,7 @@ function toggleMemtask() {
 function toggleGPU() {
     let gpu_type = $('#batch_connect_session_context_gpu_type');
     let gpu_count = $('#batch_connect_session_context_gpu_count');
+    let gpu_profile = $('#batch_connect_session_context_gpu_profile');
     let gpu_checkbox = $('#batch_connect_session_context_gpu_checkbox');
 
     let showGPUFields = gpu_checkbox.is(':checked');
@@ -250,13 +257,16 @@ function toggleGPU() {
 
     let showGPUCount = showGPUFields && gpu_type.val() !== "none";
     gpu_count.parent().toggle(showGPUCount);
+    let showGPUProfile = showGPUFields && gpu_type.val() !== "none";
+    gpu_profile.parent().toggle(showGPUProfile);
 
     if (!showGPUFields) {
         gpu_type.val('none');
         gpu_count.val('1');
+        gpu_profile;
     }
 
-    gpu_checkbox.prop('disabled', gpu_type.val() !== "none" || gpu_count.val() !== '1');
+    gpu_checkbox.prop('disabled', gpu_type.val() !== "none" || gpu_count.val() !== '1' || gpu_profile.val() !== '1');
 }
 
 /**
@@ -311,6 +321,23 @@ function toggleConstraint() {
 }
 
 /**
+ * Toggles the visibility of the reservation field.
+ */
+function toggleConstraint() {
+    let reservation = $('#batch_connect_session_context_reservation');
+    let reservation_checkbox = $('#batch_connect_session_context_reservation_checkbox');
+
+    let showConstraint = reservation_checkbox.is(':checked');
+    reservation.parent().toggle(showConstraint);
+
+    if (!showConstraint) {
+        reservation.val('');
+    }
+
+    reservation_checkbox.prop('disabled', reservation.val() !== '');
+}
+
+/**
  * Toggles the visibility of the number of nodes field.
  */
 function toggleNodes() {
@@ -359,13 +386,16 @@ $(document).ready(function () {
         nodelistCheckbox: $('#batch_connect_session_context_nodelist_checkbox'),
         addEnvCheckbox: $('#batch_connect_session_context_add_env_checkbox'),
         constraintCheckbox: $('#batch_connect_session_context_constraint_checkbox'),
+        reservationCheckbox: $('#batch_connect_session_context_reservation_checkbox'),
         nodesCheckbox: $('#batch_connect_session_context_nodes_checkbox'),
         gpuType: $('#batch_connect_session_context_gpu_type'),
         gpuCount: $('#batch_connect_session_context_gpu_count'),
+        gpuProfile: $('#batch_connect_session_context_gpu_profile'),
         memtask: $('#batch_connect_session_context_memtask'),
         nodelist: $('#batch_connect_session_context_nodelist'),
         addEnv: $('#batch_connect_session_context_additional_environment'),
         constraint: $('#batch_connect_session_context_constraint'),
+        reservation: $('#batch_connect_session_context_reservation'),
         numNodes: $('#batch_connect_session_context_num_nodes'),
         numCores: $('#batch_connect_session_context_num_cores'),
         numHours: $('#batch_connect_session_context_bc_num_hours'),
@@ -380,6 +410,7 @@ $(document).ready(function () {
         selectors.nodelistCheckbox.prop('checked', false);
         selectors.addEnvCheckbox.prop('checked', false);
         selectors.constraintCheckbox.prop('checked', false);
+        selectors.reservationCheckbox.prop('checked', false);
         selectors.nodesCheckbox.prop('checked', false);
         selectors.advancedOptionsCheckbox.prop('checked', false);
 
@@ -389,6 +420,7 @@ $(document).ready(function () {
         selectors.nodelist.val('');
         selectors.addEnv.val('');
         selectors.constraint.val('');
+        selectors.reservation.val('');
         selectors.numNodes.val('1');
         selectors.customEnvironment.val('');
 
@@ -462,6 +494,7 @@ $(document).ready(function () {
         nodelistCheckbox: { toggle: toggleNodelist, input: selectors.nodelist },
         addEnvCheckbox: { toggle: toggleAddEnv, input: selectors.addEnv },
         constraintCheckbox: { toggle: toggleConstraint, input: selectors.constraint },
+        reservationCheckbox: { toggle: toggleConstraint, input: selectors.reservation },
         nodesCheckbox: { toggle: toggleNodes, input: selectors.numNodes }
     };
 
@@ -487,6 +520,15 @@ $(document).ready(function () {
 
     // Special handling for GPU count
     selectors.gpuCount.on('input', function() {
+        const selectedCluster = selectors.cluster.val();
+        const isSpecialCluster = selectedCluster.includes('frisco') || selectedCluster.includes('bristlecone');
+        if (!isSpecialCluster) {
+            toggleGPU();
+            toggleAdvancedOptions();
+        }
+    });
+    // Special handling for GPU profiling
+    selectors.gpuProfile.on('input', function() {
         const selectedCluster = selectors.cluster.val();
         const isSpecialCluster = selectedCluster.includes('frisco') || selectedCluster.includes('bristlecone');
         if (!isSpecialCluster) {

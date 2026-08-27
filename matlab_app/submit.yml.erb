@@ -32,4 +32,12 @@ script:
     - "-w"
     - "<%= nodelist %>"
     <%- end -%>
+    <%- if constraint != "" -%>
+    - "-C"
+    - "<%= constraint %>"
+    <%- end -%>
+    <%- if reservation != "" -%>
+    - "--reservation"
+    - "<%= reservation %>"
+    <%- end -%>
   <%- end -%>
