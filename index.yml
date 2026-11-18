@@ -12,6 +12,7 @@ entries:
   jupyter_app: []
   matlab_app: []
   matlab_html_app: []
+  nf-core: []
   rstudio_server_app: []
   sas_app: []
   stata_app: []
