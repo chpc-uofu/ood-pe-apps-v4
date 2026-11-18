@@ -1,0 +1,153 @@
+#!/usr/bin/env bash
+
+# Exit immediately if a command fails
+set -euo pipefail
+
+# Clean the environment
+module purge
+
+# Load the required module
+module load nextflow apptainer
+module list
+
+# Set the working directory
+workdir="<%= context.workdir %>"
+nfparams="<%= context.nf_params %>"
+time="<%= context.bc_num_hours %>"
+account="<%= context.custom_accpart.split(":")[0]%>"
+queue="<%= context.custom_accpart.split(":")[1] %>"
+qos="<%= context.custom_accpart.split(":")[2] %>"
+pipeline_nf="<%= context.pipeline %>"
+outdir="<%= context.outdir %>"
+
+#Defining the two scratch locations
+scratch1="vast"
+scratch2="nfs1"
+
+# Checking if the user used a scratch directory for the workdir or not and creating subdir with uNID if so
+# Copy necessary files and change to the working directory
+if [[ "$workdir" == *"$scratch1"* || "$workdir" == *"$scratch2"* ]]; then
+    if [[ "$workdir" == *"$USER"* ]]; then
+        echo "Creating working directory"
+        workdir_full="$workdir/$pipeline_nf/$SLURM_JOB_ID"
+        mkdir -p "$workdir_full" || { echo "Error: Failed to create $workdir"; exit 1; }
+        cp "$nfparams" "$workdir_full" || { echo "Error: Failed to copy JSON nf-params"; exit 1; }
+        cd "$workdir_full" || { echo "Error: Failed to change to directory $workdir"; exit 1; }
+    else
+        echo "Creating uNID subdir in scratch space"
+        workdir_full="$workdir/$USER/$pipeline_nf/$SLURM_JOB_ID"
+        mkdir -p "$workdir_full" || { echo "Error: Failed to create $workdir"; exit 1; }
+        cp "$nfparams" "$workdir_full" || { echo "Error: Failed to copy JSON nf-params"; exit 1; }
+        cd "$workdir_full" || { echo "Error: Failed to change to directory $workdir"; exit 1; }
+    fi
+else
+    echo "Creating work directory"
+    workdir_full="$workdir/$pipeline_nf/$SLURM_JOB_ID"
+    mkdir -p "$workdir_full" || { echo "Error: Failed to create $workdir"; exit 1; }
+    cp "$nfparams" "$workdir_full" || { echo "Error: Failed to copy JSON nf-params"; exit 1; }
+    cd "$workdir_full" || { echo "Error: Failed to change to directory $workdir"; exit 1; }
+fi
+
+echo "Working directory is set to $workdir_full"
+
+# Determine if the job should resume
+resume_flag=""
+if [[ "<%= context.resume %>" -eq 1 ]]; then
+    echo "Resuming previous run."
+    resume_flag="-resume"
+else
+    echo "Starting a fresh run."
+fi
+
+# Check if Nextflow Tower should be used
+with_tower_flag=""
+if [[ -n "${TOWER_ACCESS_TOKEN:="<%= context.tower_access_token %>"}" && -n "${TOWER_ACCESS_TOKEN// }" ]]; then
+    echo "Using Nextflow Tower."
+    export TOWER_ACCESS_TOKEN="$TOWER_ACCESS_TOKEN"
+    with_tower_flag="-with-tower"
+else
+    echo "Not using Nextflow Tower."
+fi
+
+# Set the Singularity cache directory
+export NXF_APPTAINER_CACHEDIR="$workdir_full/../singularity-cache-nf"
+echo "Containers are being cached at $NXF_APPTAINER_CACHEDIR"
+
+# Clean up nf-params.json by removing empty values and replacing placeholders
+sed -i -E '/:[[:space:]]*,/d; /"[[:space:]]*"/d' "$nfparams"
+
+# Define resources based on execution environment
+num_memory="<%= context.memtask %>"
+num_core="<%= context.num_cores %>"
+
+#adding base amount of memory for parent job if no memory selected
+if [[ $num_memory -eq 0 ]]; then
+    echo "Adding 5Gb of memory to the parent job, as memory was left unspecified."
+    num_memory="5"
+else
+    echo "Memory required for parent job is $num_memory."
+fi
+
+#seeing if outdir is specified, if not, make it the scratch dir
+if [[ -z "$outdir" ]]; then
+    outdir="<%= context.workdir %>"
+else
+    echo "Output files being stored in $outdir"
+fi
+
+# Build Nextflow command
+nextflow_command=("nextflow run nf-core/$pipeline_nf -params-file $nfparams -profile apptainer --outdir=$outdir")
+
+gpustr=""
+
+if [[ "<%= context.gpu_type %>" != "none" ]]; then
+    echo "Using a GPU, modifying process block to include gres flag"
+    if [[ "<%= context.gpu_type %>" == "any" ]]; then 
+        gpustr="--gres=gpu:"+"<%= context.gpu_count %>"
+    else
+        gpustr="--gres=gpu:"+"<%= context.gpu_type %>"+":"+"<%= context.gpu_count %>"
+    fi
+    if [[ "<%= context.gpu_profile %>" == "1" ]]; then
+        gpustr <<< ",nsight:1"
+    fi
+else
+    echo "No GPU selected"
+fi
+
+cat <<EOF > custom.config  
+process {
+    withName: '.*' {
+        executor = 'slurm'
+        queue = '$queue'
+        clusterOptions = '--account=$account --qos=$qos $gpustr'
+    }
+    withName: '.*MULTIQC.*' {
+        beforeScript = 'export TMPDIR="$workdir_full"'
+    }
+}
+executor {
+    name = 'slurm'
+}
+trace.overwrite = true
+EOF
+
+echo "custom.config file created with cpus=$num_core, memory=$num_memory, where gpu=$gpustr."
+
+if [[ $queue == "notchpeak-shared-short" ]]; then
+    echo "notchpeak-shared-short has an 8 hour max walltime, as well as limits on CPU and memory usage. We recommend using a partition other than notchpeak-shared-short for nf-core pipelines. Updating each spawned job to be limited to walltime, CPU, and memory limits."
+    sed -i "5a\\        time = '8h'" custom.config
+    sed -i "6a\\        cpus = $num_core" custom.config
+    sed -i "7a\\        memory = $num_memory.GB" custom.config
+    sed -i "12a\\    queueSize = 5" custom.config
+    nextflow_command+=( "-qs 2" )
+fi
+
+nextflow_command+=( "-c custom.config")
+
+# Append optional flags
+[[ -n "$resume_flag" ]] && nextflow_command+=("$resume_flag")
+[[ -n "$with_tower_flag" ]] && nextflow_command+=("$with_tower_flag")
+
+# Output and execute the command
+echo "Executing command: ${nextflow_command[*]}"
+eval "${nextflow_command[*]}"
