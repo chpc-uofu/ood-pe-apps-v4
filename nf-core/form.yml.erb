@@ -172,10 +172,8 @@ attributes:
   cluster:
     widget: select
     options:
-      <%- CustomQueues.clusters.each do |g| %>
-      - "<%= g %>"
-      <%- end %>
-<% IO.foreach(template_root+"friscos_v2") do |line| %>
+      - redwood
+<% IO.foreach(template_root+"bristlecones_v2") do |line| %>
 <%= line %>
 <% end %>    
 <% IO.foreach(template_root+"cluster-help") do |line| %>
