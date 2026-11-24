@@ -23,8 +23,6 @@ const gpuMapping = gpuDataHash["gpu_name_mappings"].reduce((mapping, str) => {
     return mapping;
 }, {});
 
-const cachedAccPart = $('#batch_connect_session_context_custom_accpart').val();
-
 // SET PARTITION LIMITS ------------------------------------------------------------------------------------------------
 
 /**
@@ -38,16 +36,12 @@ function partitionLimits(selected_queue) {
     const mem = $('#batch_connect_session_context_memtask');
 
     const queueConfigs = {
-        "notchpeak-shared-short:notchpeak-shared-short": { max_time: 8, max_cpu: 16, max_mem: 128 },
-        "smithp-ash": { max_time: 168, max_cpu: 24, max_mem: 490 },
-        "lp": { max_time: 336, max_cpu: 20, max_mem: 128 },
-        "kp": { max_time: 336, max_cpu: 28, max_mem: 1000 },
-        "np": { max_time: 336, max_cpu: 96, max_mem: 1000 },
-        "grn": { max_time: 336, max_cpu: 96, max_mem: 1152 }
+        "redwood-shared-short:redwood-shared-short": { max_time: 8, max_cpu: 8, max_mem: 32 },
+        "rw": { max_time: 336, max_cpu: 384, max_mem: 2150 }
     };
 
     let config = Object.entries(queueConfigs).find(([key, _]) => selected_queue.includes(key));
-    let { max_time, max_cpu, max_mem } = config ? config[1] : { max_time: 72, max_cpu: 96, max_mem: 1536 };
+    let { max_time, max_cpu, max_mem } = config ? config[1] : { max_time: 72, max_cpu: 384, max_mem: 2150 };
 
     setFormField(time, max_time);
     setFormField(cpus, max_cpu);
@@ -139,8 +133,6 @@ function setDefaultPartition(clusterChange) {
     const accountPartitionSelect = document.getElementById('batch_connect_session_context_custom_accpart');
     const options = accountPartitionSelect.options;
     
-
-
     // Allow for caching
     if (clusterChange || !accountPartitionSelect.value) {
         for (i = 0; i < options.length; i++) {
@@ -168,7 +160,6 @@ function toggleAdvancedOptions() {
         memtask: $('#batch_connect_session_context_memtask'),
         gpuType: $('#batch_connect_session_context_gpu_type').length > 0 ? $('#batch_connect_session_context_gpu_type') : null,
         gpuCount: $('#batch_connect_session_context_gpu_count').length > 0 ? $('#batch_connect_session_context_gpu_count') : null,
-        gpuProfile: $('#batch_connect_session_context_gpu_profile'),
         nodelist: $('#batch_connect_session_context_nodelist'),
         constraint: $('#batch_connect_session_context_constraint'),
         additionalEnvironment: $('#batch_connect_session_context_additional_environment'),
@@ -201,10 +192,9 @@ function toggleAdvancedOptions() {
     toggleVisibility(elements.additionalEnvironment, showAdvanced && elements.checkboxes.addEnv.is(':checked'));
     toggleVisibility(elements.constraint, showAdvanced && elements.checkboxes.constraint.is(':checked'));
 
-    if (elements.gpuType && elements.gpuCount && elements.gpuProfile && elements.checkboxes.gpu) {
+    if (elements.gpuType && elements.gpuCount && elements.checkboxes.gpu) {
         toggleVisibility(elements.gpuType, showAdvanced && elements.checkboxes.gpu.is(':checked'));
         toggleVisibility(elements.gpuCount, showAdvanced && elements.checkboxes.gpu.is(':checked') && elements.gpuType.val() !== "none");
-        toggleVisibility(elements.gpuProfile, showAdvanced && elements.checkboxes.gpu.is(':checked') && elements.gpuType.val() !== "none");
     }
 
     if (elements.numNodes && elements.checkboxes.nodes) {
@@ -219,7 +209,6 @@ function toggleAdvancedOptions() {
         elements.constraint.val() !== "" ||
         elements.additionalEnvironment.val() !== "" ||
         (elements.numNodes && elements.numNodes.val() !== "1");
-//        (elements.gpuProfile && elements.gpuProfile.val() !== "0") ||
 
     elements.advancedOptions.prop('disabled', isAnyAdvancedOptionNonDefault);
 
@@ -254,7 +243,6 @@ function toggleMemtask() {
 function toggleGPU() {
     let gpu_type = $('#batch_connect_session_context_gpu_type');
     let gpu_count = $('#batch_connect_session_context_gpu_count');
-    let gpu_profile = $('#batch_connect_session_context_gpu_profile');
     let gpu_checkbox = $('#batch_connect_session_context_gpu_checkbox');
 
     let showGPUFields = gpu_checkbox.is(':checked');
@@ -262,16 +250,13 @@ function toggleGPU() {
 
     let showGPUCount = showGPUFields && gpu_type.val() !== "none";
     gpu_count.parent().toggle(showGPUCount);
-    let showGPUProfile = showGPUFields && gpu_type.val() !== "none";
-    gpu_profile.parent().toggle(showGPUProfile);
 
     if (!showGPUFields) {
         gpu_type.val('none');
         gpu_count.val('1');
-        gpu_profile;
     }
 
-    gpu_checkbox.prop('disabled', gpu_type.val() !== "none" || gpu_count.val() !== '1' || gpu_profile.val() !== '1');
+    gpu_checkbox.prop('disabled', gpu_type.val() !== "none" || gpu_count.val() !== '1');
 }
 
 /**
@@ -348,10 +333,10 @@ function toggleNodes() {
 function toggleCustomEnvironment() {
     const pythonField = $('#batch_connect_session_context_python');
     const customEnvironment = $('#batch_connect_session_context_custom_environment');
-    const customEnvironmentParent = customEnvironment.closest('.form-group');  // Get the parent container
+    const customEnvironmentParent = customEnvironment.closest('.form-group');
 
     const showCustomEnv = pythonField.val() === 'custom';
-    customEnvironmentParent.toggle(showCustomEnv);  // Toggle the entire container
+    customEnvironmentParent.toggle(showCustomEnv);
 
     if (!showCustomEnv) {
         customEnvironment.val('');
@@ -377,7 +362,6 @@ $(document).ready(function () {
         nodesCheckbox: $('#batch_connect_session_context_nodes_checkbox'),
         gpuType: $('#batch_connect_session_context_gpu_type'),
         gpuCount: $('#batch_connect_session_context_gpu_count'),
-        gpuProfile: $('#batch_connect_session_context_gpu_profile'),
         memtask: $('#batch_connect_session_context_memtask'),
         nodelist: $('#batch_connect_session_context_nodelist'),
         addEnv: $('#batch_connect_session_context_additional_environment'),
@@ -402,7 +386,6 @@ $(document).ready(function () {
         selectors.memtask.val('0');
         selectors.gpuType.val('none');
         selectors.gpuCount.val('1');
-       // selectors.gpuProfile.val('0');
         selectors.nodelist.val('');
         selectors.addEnv.val('');
         selectors.constraint.val('');
@@ -504,15 +487,6 @@ $(document).ready(function () {
 
     // Special handling for GPU count
     selectors.gpuCount.on('input', function() {
-        const selectedCluster = selectors.cluster.val();
-        const isSpecialCluster = selectedCluster.includes('frisco') || selectedCluster.includes('bristlecone');
-        if (!isSpecialCluster) {
-            toggleGPU();
-            toggleAdvancedOptions();
-        }
-    });
-    // Special handling for GPU profiling
-    selectors.gpuProfile.on('input', function() {
         const selectedCluster = selectors.cluster.val();
         const isSpecialCluster = selectedCluster.includes('frisco') || selectedCluster.includes('bristlecone');
         if (!isSpecialCluster) {
