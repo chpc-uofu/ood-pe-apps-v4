@@ -107,9 +107,6 @@ if [[ "<%= context.gpu_type %>" != "none" ]]; then
     else
         gpustr="--gres=gpu:"+"<%= context.gpu_type %>"+":"+"<%= context.gpu_count %>"
     fi
-    if [[ "<%= context.gpu_profile %>" == "1" ]]; then
-        gpustr <<< ",nsight:1"
-    fi
 else
     echo "No GPU selected"
 fi
