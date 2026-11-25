@@ -168,7 +168,6 @@ function toggleAdvancedOptions() {
         memtask: $('#batch_connect_session_context_memtask'),
         gpuType: $('#batch_connect_session_context_gpu_type').length > 0 ? $('#batch_connect_session_context_gpu_type') : null,
         gpuCount: $('#batch_connect_session_context_gpu_count').length > 0 ? $('#batch_connect_session_context_gpu_count') : null,
-        gpuProfile: $('#batch_connect_session_context_gpu_profile'),
         nodelist: $('#batch_connect_session_context_nodelist'),
         constraint: $('#batch_connect_session_context_constraint'),
         additionalEnvironment: $('#batch_connect_session_context_additional_environment'),
@@ -254,7 +253,6 @@ function toggleMemtask() {
 function toggleGPU() {
     let gpu_type = $('#batch_connect_session_context_gpu_type');
     let gpu_count = $('#batch_connect_session_context_gpu_count');
-    let gpu_profile = $('#batch_connect_session_context_gpu_profile');
     let gpu_checkbox = $('#batch_connect_session_context_gpu_checkbox');
 
     let showGPUFields = gpu_checkbox.is(':checked');
@@ -263,15 +261,13 @@ function toggleGPU() {
     let showGPUCount = showGPUFields && gpu_type.val() !== "none";
     gpu_count.parent().toggle(showGPUCount);
     let showGPUProfile = showGPUFields && gpu_type.val() !== "none";
-    gpu_profile.parent().toggle(showGPUProfile);
 
     if (!showGPUFields) {
         gpu_type.val('none');
         gpu_count.val('1');
-        gpu_profile;
     }
 
-    gpu_checkbox.prop('disabled', gpu_type.val() !== "none" || gpu_count.val() !== '1' || gpu_profile.val() !== '1');
+    gpu_checkbox.prop('disabled', gpu_type.val() !== "none" || gpu_count.val() !== '1');
 }
 
 /**
@@ -377,7 +373,6 @@ $(document).ready(function () {
         nodesCheckbox: $('#batch_connect_session_context_nodes_checkbox'),
         gpuType: $('#batch_connect_session_context_gpu_type'),
         gpuCount: $('#batch_connect_session_context_gpu_count'),
-        gpuProfile: $('#batch_connect_session_context_gpu_profile'),
         memtask: $('#batch_connect_session_context_memtask'),
         nodelist: $('#batch_connect_session_context_nodelist'),
         addEnv: $('#batch_connect_session_context_additional_environment'),
